@@ -1,26 +1,30 @@
-name: Build Godot
+name: Build Godot Windows
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y scons build-essential python3
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-      - name: Build
+      - name: Install SCons
         run: |
-          scons platform=linuxbsd target=editor -j2
+          pip install scons
 
-      - name: Upload
+      - name: Build Editor
+        run: |
+          scons platform=windows target=editor production=yes
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: godot-linux
+          name: godot-windows
           path: bin/*
